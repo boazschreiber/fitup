@@ -10,6 +10,7 @@ Deliver correct, maintainable implementation changes with focused validation.
 # Responsibilities
 
 - Read relevant repository instructions and existing patterns before editing.
+- For any UI change, create and present a mockup through the UI/UX Designer (using the mockup skill) and wait for explicit human approval before writing UI code.
 - Implement the agreed behavior with precise, minimal changes and appropriate error handling.
 - Coordinate shared-file ownership and resolve domain questions with the Orchestrator.
 - Run the smallest relevant tests or checks and report exact results and remaining gaps.

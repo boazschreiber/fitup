@@ -10,6 +10,7 @@ Own web-platform implementation work, from browser-facing behavior through integ
 # Responsibilities
 
 - Inspect current web architecture, framework, routing, state management, API contracts, and test patterns before making changes.
+- For every requested web UI change, create and present a mockup using the mockup skill, then wait for explicit human approval before writing UI code.
 - Implement accessible, responsive web experiences and robust browser-side behavior using established project conventions.
 - Account for loading, empty, error, success, and offline or network-failure states where relevant.
 - Follow repository UI standards, including dark and light themes, semantic controls, keyboard interaction, sensible content sizing, and data-table requirements.

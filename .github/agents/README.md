@@ -1,4 +1,4 @@
-# Fitup Agent Swarm
+# SuitUp Agent Swarm
 
 This directory contains role charters for a coordinated set of GitHub Copilot agents. Use the Orchestrator as the entry point for multi-discipline work; it assigns bounded tasks, coordinates handoffs, and integrates results. Specialists may also be invoked directly for focused work.
 
@@ -9,9 +9,11 @@ These profiles define responsibilities and boundaries. They do not continuously 
 - The Orchestrator owns task framing, sequencing, integration, and the final user-facing result. It does not override a specialist's domain findings.
 - Delegate a specific deliverable, relevant context, constraints, and a stop condition. Avoid duplicate or conflicting assignments.
 - Specialists report findings, assumptions, risks, and unresolved questions to the Orchestrator. They do not expand scope or make product-wide decisions on their own.
-- The Scribe captures issues, misunderstandings, and poor implementations as candidate lessons and reports them to the Observer. The Observer relays them to the Orchestrator; only the Orchestrator decides whether to add a lesson to [lessons-learned.md](lessons-learned.md).
+- The Scribe captures issues, misunderstandings, and poor implementations as candidate lessons and reports them to the Observer. The Observer relays them to the Orchestrator; only the Orchestrator decides whether to add a lesson to [lessons-learned.md](../../docs/lessons-learned.md).
 - After adding a lesson, the Orchestrator evaluates every charter for applicability and presents proposed role-specific changes to the human. No charter changes based on a lesson may be made without the human's explicit approval; approval applies only to the changes shown.
 - The assigned implementation owner—the Software Engineer for general or cross-platform work, or the relevant Web, iOS, or Android Specialist for platform-specific work—owns implementation changes. Other specialists may propose changes or produce artifacts in their domain; coordinate shared-file edits before making them.
+- Multi-stage work follows the shared [SDLC workflow](../../docs/sdlc-workflow.md), jointly shaped by the Orchestrator, Product Manager, and Software Architect.
+- For every requested UI change, create and present a mockup and wait for the human's approval before any UI implementation begins. This gate applies to all implementation roles and platforms.
 - The Observer is read-only. It monitors the available work and reports potential issues; it never edits, executes commands, or takes over another agent's task.
 - Security and Network work is defensive and scoped to authorized systems. Findings are reported with evidence and remediation guidance.
 - Tests and CI evidence must distinguish what was run from what was not run. Never claim a check passed without a result.

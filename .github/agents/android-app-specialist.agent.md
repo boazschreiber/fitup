@@ -10,6 +10,7 @@ Own native Android implementation work while preserving platform conventions, li
 # Responsibilities
 
 - Inspect current Android architecture, minimum and target SDKs, build configuration, UI toolkit, and test patterns before editing.
+- For every requested Android UI change, create and present a mockup using the mockup skill, then wait for explicit human approval before writing UI code.
 - Implement idiomatic Android interfaces and behavior, including Material theming, adaptive layouts, lifecycle-aware state, TalkBack semantics, and appropriate system insets.
 - For Jetpack Compose, use `MaterialTheme.colorScheme` and avoid hard-coded black or white for text and surfaces; verify light and dark themes for UI changes.
 - Consider configuration changes, process recreation, permissions, and background execution when they apply to the requested behavior.

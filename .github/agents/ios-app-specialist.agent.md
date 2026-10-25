@@ -10,7 +10,7 @@ Own native iOS implementation work while preserving platform conventions, access
 # Responsibilities
 
 - Inspect current iOS architecture, supported OS versions, project configuration, design patterns, and tests before editing.
-- Before any iOS UI change, create a mockup with the mockup skill and wait for the user's approval before changing product code. Inspect worktrees and lane worktrees for uncommitted work on the same screen, and use the newest user-provided mockup when available.
+- Before any iOS UI change, create a mockup with the mockup skill and wait for the user's explicit approval before writing UI code. Inspect worktrees and lane worktrees for uncommitted work on the same screen, and use the newest user-provided mockup when available.
 - Implement idiomatic iOS interfaces and behavior, including semantic adaptive colors, dynamic type, VoiceOver, safe areas, and appropriate device layouts.
 - After every iOS code change, run `npm run version:bump -- --level build --ios-app <app>` (retry with `--force` if it refuses because `VERSION` already differs from `HEAD`), run `./scripts/sync-mobile-versions.sh --platform ios --app <app>`, ensure every `DEVELOPMENT_TEAM` value in the app's `project.pbxproj` is empty, and build the app.
 - Report the exact resulting app version and build number, build result, and any unverified device or OS coverage.

@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>SuitUp — First-pass app mockup</title>
+  <!--
+  THESIS: Treat outfit feedback like a tailor's marked-up fitting sheet, not a generic fashion feed.
+  OWN-WORLD: Bone stock, ink-black type, vermilion annotation marks, and a cobalt action; a measured
+  center rail links a rotatable 3D avatar wearing the occasion-specific outfit to its fitting notes.
+  STORY: Name the occasion, add a look, spin the subject through 360 degrees, then read what to try next.
+  FIRST VIEWPORT: iOS opens on occasion + photo, with a draggable 3D subject, angle steps, fitting token,
+  and action. Results lead with score, the rotatable subject, and two concise notes.
+  FORM: Grounded direction 3, staged as a fitting-room review sheet; seed d0f121e1.
+  -->
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #e8ddcb;
+      --sheet: #fffaf1;
+      --ink: #20201e;
+      --muted: #69665f;
+      --rule: #c9c1b5;
+      --mark: #c9442d;
+      --action: #245fd6;
+      --action-hover: #174db6;
+      --soft: #ddcfbb;
+      --specimen: #d8c7ae;
+      --shadow: 0 26px 72px rgb(41 32 24 / 16%);
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --paper: #171615;
+      --sheet: #222220;
+      --ink: #f4f0e8;
+      --muted: #c5beb2;
+      --rule: #5c574f;
+      --mark: #ff8166;
+      --action: #245fd6;
+      --action-hover: #174db6;
+      --soft: #37312a;
+      --specimen: #41392f;
+      --shadow: 0 26px 72px rgb(0 0 0 / 40%);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, transparent calc(50% - 0.5px), var(--rule) 50%, transparent calc(50% + 0.5px)) 0 0 / 100% 32px,
+        var(--paper);
+      color: var(--ink);
+      font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      transition: background-color 180ms ease, color 180ms ease;
+    }
+
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid var(--action);
+      outline-offset: 3px;
+    }
+
+    .board {
+      width: min(1420px, 100%);
+      margin-inline: auto;
+      padding: 30px clamp(16px, 4vw, 56px) 72px;
+    }
+
+    .board-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .board-title {
+      margin: 0;
+      font-size: clamp(27px, 4vw, 44px);
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+    }
+
+    .board-copy {
+      max-width: 610px;
+      margin: 12px 0 0;
+      color: var(--muted);
+    }
+
+    .board-tools { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .tool-button, .view-tab, .device-tab {
+      min-height: 44px;
+      padding: 9px 14px;
+      border: 1px solid var(--rule);
+      border-radius: 12px;
+      background: var(--sheet);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .tool-button:hover, .view-tab:hover, .device-tab:hover { border-color: var(--ink); }
+    .view-tab[aria-pressed="true"], .device-tab[aria-pressed="true"] {
+      border-color: var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .approval-note {
+      margin: 18px 0 34px;
+      padding: 11px 14px;
+      border: 1px solid var(--mark);
+      border-radius: 14px;
+      color: var(--ink);
+      background: color-mix(in srgb, var(--mark) 8%, var(--sheet));
+      font-size: 13px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin: 0 0 15px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -0.025em;
+    }
+
+    .section-head p { margin: 0; color: var(--muted); font-size: 13px; }
+    .ios-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(260px, 380px));
+      justify-content: center;
+      gap: clamp(18px, 4vw, 54px);
+      margin-bottom: 56px;
+    }
+
+    .screen-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .phone {
+      overflow: hidden;
+      height: 740px;
+      border: 7px solid #111;
+      border-radius: 38px;
+      background: var(--sheet);
+      box-shadow: var(--shadow);
+    }
+
+    .phone-inner {
+      height: 726px;
+      display: flex;
+      flex-direction: column;
+      padding: 13px 21px 14px;
+      background: var(--sheet);
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      height: 25px;
+      padding: 0 3px;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .app-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 52px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .wordmark { font-size: 18px; font-weight: 850; letter-spacing: -0.06em; }
+    .top-action {
+      min-width: 44px;
+      min-height: 44px;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .screen-content { flex: 1; min-height: 0; overflow-y: auto; padding-top: 17px; scrollbar-width: none; }
+    .screen-content::-webkit-scrollbar { display: none; }
+    .ios-grid article:first-child .specimen { min-height: 178px; margin-top: 11px; }
+    .ios-grid article:first-child .model-canvas { width: 132px; height: 156px; }
+    .phone .fidget-zone { min-height: 58px; }
+    .phone .subtle-link { min-height: 38px; margin-top: 6px; }
+    .screen-content h3 {
+      margin: 0;
+      font-size: 29px;
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+    }
+
+    .lede { margin: 9px 0 19px; color: var(--muted); font-size: 14px; }
+    .field-label {
+      display: block;
+      margin: 0 0 7px;
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .occasion-select {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 50px;
+      padding: 0 13px;
+      border: 1px solid var(--ink);
+      border-radius: 12px;
+      background: var(--sheet);
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .specimen {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 253px;
+      margin-top: 15px;
+      overflow: hidden;
+      border-radius: 16px;
+      background:
+        linear-gradient(135deg, transparent 49.7%, var(--rule) 50%, transparent 50.3%) 0 0 / 32px 32px,
+        var(--specimen);
+    }
+
+    .model-canvas { display: block; width: 150px; height: 178px; touch-action: none; cursor: grab; }
+    .model-canvas:active { cursor: grabbing; }
+    .orbit-step {
+      position: absolute;
+      z-index: 1;
+      top: 50%;
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      margin-top: -22px;
+      border: 1px solid var(--action);
+      border-radius: 50%;
+      background: var(--sheet);
+      color: var(--action);
+      cursor: pointer;
+      font-size: 21px;
+      font-weight: 750;
+    }
+
+    .orbit-step:hover { background: color-mix(in srgb, var(--action) 10%, var(--sheet)); }
+    .orbit-step.previous { left: 8px; }
+    .orbit-step.next { right: 8px; }
+    .angle-readout {
+      position: absolute;
+      right: 50%;
+      bottom: 8px;
+      transform: translateX(50%);
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: var(--sheet);
+      color: var(--ink);
+      font-size: 10px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .model-tip {
+      position: absolute;
+      top: 9px;
+      left: 10px;
+      padding: 4px 7px;
+      border-radius: 8px;
+      background: var(--sheet);
+      color: var(--muted);
+      font-size: 9px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .upload-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 46px;
+      border-bottom: 1px solid var(--rule);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .upload-row strong { color: var(--ink); font-weight: 650; }
+    .fidget-zone {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      min-height: 75px;
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .fidget-zone > span:first-child { text-align: right; }
+    .fidget-zone > span:last-child { text-align: left; }
+
+    .fidget {
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .fidget svg { width: 48px; height: 48px; overflow: visible; }
+    .fidget:active { cursor: grabbing; }
+    .fidget .wheel { transform-origin: 24px 24px; transition: transform 140ms ease-out; }
+    .fidget.is-spun .wheel { transform: rotate(140deg); }
+    .primary {
+      width: 100%;
+      min-height: 52px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--action);
+      color: #fff;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .primary:hover { background: var(--action-hover); }
+    .subtle-link {
+      display: block;
+      margin: 12px auto 0;
+      min-height: 44px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .tab-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin-top: 10px;
+      padding-top: 9px;
+      border-top: 1px solid var(--rule);
+    }
+
+    .tab {
+      min-height: 48px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .tab.active { color: var(--ink); font-weight: 750; }
+    .tab-mark { display: block; margin-bottom: 2px; font-size: 17px; line-height: 1; }
+
+    .result-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .result-head h3 { font-size: 23px; }
+    .event-label { margin: 6px 0 0; color: var(--muted); font-size: 12px; }
+    .score { text-align: right; }
+    .score strong {
+      display: block;
+      color: var(--mark);
+      font-size: 44px;
+      line-height: 0.95;
+      letter-spacing: -0.07em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .score span { color: var(--muted); font-size: 11px; }
+    .result-specimen { min-height: 150px; margin: 8px 0 10px; }
+    .result-specimen .model-canvas { width: 110px; height: 142px; }
+    .rail-note {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 10px;
+      padding: 11px 0;
+      border-top: 1px solid var(--rule);
+    }
+
+    .rail-index {
+      display: grid;
+      place-items: start center;
+      padding-top: 3px;
+      color: var(--mark);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .rail-copy strong { display: block; font-size: 13px; }
+    .rail-copy p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+    .result-token { min-height: 48px; }
+    .result-token .fidget { width: 44px; height: 44px; }
+    .result-token .fidget svg { width: 38px; height: 38px; }
+    .result-actions { margin-top: auto; padding-top: 10px; }
+
+    .web-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .control-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .web-frame {
+      overflow: hidden;
+      border: 1px solid var(--rule);
+      border-radius: 18px;
+      background: var(--sheet);
+      box-shadow: var(--shadow);
+    }
+    .web-frame.mobile-preview { max-width: 430px; margin-inline: auto; }
+    .web-frame.mobile-preview .web-app { padding-inline: 18px; }
+    .web-frame.mobile-preview .web-nav { min-height: 60px; }
+    .web-frame.mobile-preview .web-nav-links { gap: 11px; font-size: 11px; }
+    .web-frame.mobile-preview .web-nav-links span:nth-child(2) { display: none; }
+    .web-frame.mobile-preview .web-body { padding-top: 28px; }
+    .web-frame.mobile-preview .web-home,
+    .web-frame.mobile-preview .web-result { grid-template-columns: minmax(0, 1fr); gap: 25px; }
+    .web-frame.mobile-preview .web-home h3,
+    .web-frame.mobile-preview .web-result h3 { font-size: 38px; }
+    .web-frame.mobile-preview .web-result .result-specimen { min-height: 240px; }
+    .web-frame.mobile-preview .web-result .model-canvas { width: 145px; height: 205px; }
+    .web-frame.mobile-preview .web-result .result-actions { align-items: stretch; flex-direction: column; }
+    .web-frame.mobile-preview .web-result .primary { width: 100%; }
+    .web-frame.mobile-preview .web-result .subtle-link { margin: 5px auto 0; }
+    .web-frame.mobile-preview .web-home .web-side { order: 0; }
+    .web-frame.mobile-preview .web-result .web-side { order: -1; }
+    .web-frame.mobile-preview .web-result .result-specimen { order: 0; }
+    .web-frame.mobile-preview .web-home .specimen { min-height: 220px; }
+    .web-frame.mobile-preview .web-home .model-canvas { width: 150px; height: 185px; }
+
+    .browser-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      height: 39px;
+      padding: 0 14px;
+      border-bottom: 1px solid var(--rule);
+      background: var(--soft);
+    }
+
+    .browser-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); opacity: 0.65; }
+    .address { margin-left: 7px; color: var(--muted); font-size: 11px; }
+    .web-app { min-height: 605px; padding: 0 clamp(20px, 4vw, 60px) 34px; }
+    .web-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 70px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .web-nav-links { display: flex; align-items: center; gap: 22px; color: var(--muted); font-size: 13px; }
+    .web-nav-links span:first-child { color: var(--ink); font-weight: 750; }
+    .web-body { width: min(1030px, 100%); margin: 0 auto; padding-top: 45px; }
+    .web-home, .web-result { display: grid; grid-template-columns: minmax(0, 1fr) minmax(270px, 0.85fr); gap: clamp(22px, 5vw, 62px); align-items: center; }
+    .web-home h3, .web-result h3 {
+      max-width: 520px;
+      margin: 0;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 0.99;
+      letter-spacing: -0.055em;
+    }
+
+    .web-home .lede, .web-result .lede { max-width: 430px; font-size: 16px; }
+    .web-fields { width: min(440px, 100%); margin-top: 26px; }
+    .web-fields .specimen { min-height: 265px; }
+    .web-home .model-canvas { width: 190px; height: 230px; }
+    .web-fields .fidget-zone { min-height: 68px; }
+    .web-side { min-width: 0; }
+    .web-result { grid-template-columns: minmax(250px, 0.9fr) minmax(0, 1.1fr); }
+    .web-result .result-specimen { min-height: 420px; margin: 0; }
+    .web-result .result-specimen .model-canvas { width: 230px; height: 320px; }
+    .web-result .score strong { font-size: 64px; }
+    .web-result .rail-note { grid-template-columns: 42px minmax(0, 1fr); padding: 19px 0; }
+    .web-result .rail-copy strong { font-size: 16px; }
+    .web-result .rail-copy p { font-size: 14px; }
+    .web-result .result-actions { display: flex; align-items: center; gap: 14px; }
+    .web-result .primary { width: auto; min-width: 205px; padding-inline: 20px; white-space: nowrap; }
+    .web-result .subtle-link { margin: 0; white-space: nowrap; }
+    .sample-note { margin: 12px 0 0; color: var(--muted); font-size: 11px; }
+    [hidden] { display: none !important; }
+
+    @media (max-width: 760px) {
+      .board { padding: 20px 16px 44px; }
+      .board-head { flex-direction: column; }
+      .board-tools { justify-content: flex-start; }
+      .ios-grid { grid-template-columns: minmax(0, 380px); gap: 26px; }
+      .phone { height: 710px; border-radius: 32px; }
+      .phone-inner { height: 696px; padding-inline: 18px; }
+      .web-controls { align-items: flex-start; flex-direction: column; }
+      .web-app { padding-inline: 18px; }
+      .web-nav { min-height: 60px; }
+      .web-nav-links { gap: 11px; font-size: 11px; }
+      .web-body { padding-top: 28px; }
+      .web-home, .web-result { grid-template-columns: minmax(0, 1fr); gap: 25px; }
+      .web-home h3, .web-result h3 { font-size: 38px; }
+      .web-side { order: -1; }
+      .web-home .web-side { order: 0; }
+      .web-home .specimen { min-height: 220px; }
+      .web-result .result-specimen { min-height: 240px; }
+      .web-result .result-specimen .model-canvas { width: 145px; height: 205px; }
+      .web-result .result-actions { align-items: stretch; flex-direction: column; }
+      .web-result .primary { width: 100%; }
+      .web-result .subtle-link { margin: 5px auto 0; }
+    }
+
+    @media (max-width: 390px) {
+      .phone { border-width: 5px; }
+      .phone-inner { padding-inline: 14px; }
+      .screen-content h3 { font-size: 26px; }
+      .specimen { min-height: 220px; }
+      .web-nav-links span:nth-child(2) { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="board">
+    <header class="board-head">
+      <div>
+        <h1 class="board-title">A fitting note for wherever you're headed.</h1>
+        <p class="board-copy">First-pass SuitUp concept · iOS first, responsive web companion · fitting-room review-sheet direction</p>
+      </div>
+      <div class="board-tools" aria-label="Mockup options">
+        <button class="tool-button" id="theme-toggle" type="button" aria-pressed="false">Switch to dark</button>
+      </div>
+    </header>
+
+    <p class="approval-note"><strong>Design mockup — approved October 25, 2026.</strong> This is a visual mockup, not a working outfit-rating app. The rotatable cartoon-style 3D avatar and 8.7 score are synthetic examples.</p>
+
+    <section aria-labelledby="ios-title">
+      <div class="section-head">
+        <h2 id="ios-title">iOS · two-screen first pass</h2>
+        <p>Native tab structure · safe areas · one clear task per screen</p>
+      </div>
+      <div class="ios-grid">
+        <article>
+          <p class="screen-label"><span>01 / Start a fit check</span><span>iPhone concept</span></p>
+          <div class="phone">
+            <div class="phone-inner">
+              <div class="status-bar"><span>9:41</span><span>●●●  ▰</span></div>
+              <header class="app-top">
+                <span class="wordmark">suitup<span style="color:var(--mark)">.</span></span>
+                <button class="top-action" type="button" aria-label="Open profile">◎</button>
+              </header>
+              <div class="screen-content">
+                <h3>What are you dressing for?</h3>
+                <p class="lede">A little context makes the advice fit.</p>
+                <label class="field-label" for="ios-event">Occasion or theme</label>
+                <button class="occasion-select" id="ios-event" type="button" aria-label="Occasion: Gallery opening">
+                  <span>Gallery opening</span><span aria-hidden="true">⌄</span>
+                </button>
+                <div class="specimen model-viewer" data-model-viewer aria-label="Synthetic rotating 3D outfit preview">
+                  <canvas class="model-canvas" width="320" height="380" aria-label="Synthetic cartoon-style 3D avatar wearing a sample outfit. Drag to spin it through multiple angles."></canvas>
+                  <span class="model-tip">Synthetic 3D avatar</span>
+                  <button class="orbit-step previous" type="button" data-angle-step="-45" aria-label="Rotate outfit 45 degrees left">‹</button>
+                  <button class="orbit-step next" type="button" data-angle-step="45" aria-label="Rotate outfit 45 degrees right">›</button>
+                  <output class="angle-readout" aria-live="polite">FRONT · 0°</output>
+                </div>
+                <div class="upload-row"><strong>Add your outfit photo</strong><span>Camera or library&nbsp; +</span></div>
+                <div class="fidget-zone">
+                  <span>Turn the fitting token</span>
+                  <button class="fidget" type="button" aria-label="Rotate the fitting token">
+                    <svg viewBox="0 0 48 48" aria-hidden="true">
+                      <g class="wheel" fill="none" stroke="var(--mark)" stroke-width="1.5">
+                        <circle cx="24" cy="24" r="18" stroke-dasharray="3 3"/>
+                        <circle cx="24" cy="24" r="12"/>
+                        <path d="M24 4v7m0 26v7M4 24h7m26 0h7M10 10l5 5m18 18 5 5m0-28-5 5M15 33l-5 5"/>
+                      </g>
+                      <circle cx="24" cy="24" r="3" fill="var(--ink)"/>
+                    </svg>
+                  </button>
+                  <span>Just for fun</span>
+                </div>
+                <button class="primary" type="button">Get my fit check</button>
+                <button class="subtle-link" type="button">How outfit feedback works</button>
+              </div>
+              <nav class="tab-bar" aria-label="Main navigation">
+                <button class="tab active" type="button"><span class="tab-mark" aria-hidden="true">⌂</span>Check</button>
+                <button class="tab" type="button"><span class="tab-mark" aria-hidden="true">▤</span>Looks</button>
+                <button class="tab" type="button"><span class="tab-mark" aria-hidden="true">○</span>You</button>
+              </nav>
+            </div>
+          </div>
+        </article>
+
+        <article>
+          <p class="screen-label"><span>02 / Read the fit</span><span>iPhone concept</span></p>
+          <div class="phone">
+            <div class="phone-inner">
+              <div class="status-bar"><span>9:41</span><span>●●●  ▰</span></div>
+              <header class="app-top">
+                <button class="top-action" type="button" aria-label="Go back">‹</button>
+                <span class="wordmark">fit note</span>
+                <button class="top-action" type="button" aria-label="More options">···</button>
+              </header>
+              <div class="screen-content">
+                <div class="result-head">
+                  <div>
+                    <h3>You're nearly there.</h3>
+                    <p class="event-label">GALLERY OPENING · YOUR FIT NOTE</p>
+                  </div>
+                  <div class="score"><strong>8.7</strong><span>out of 10</span></div>
+                </div>
+                <div class="specimen result-specimen model-viewer" data-model-viewer aria-label="Synthetic rotating 3D outfit preview">
+                  <canvas class="model-canvas" width="320" height="380" aria-label="Synthetic cartoon-style 3D avatar wearing a sample outfit. Drag to spin it through multiple angles."></canvas>
+                  <span class="model-tip">Synthetic 3D avatar</span>
+                  <button class="orbit-step previous" type="button" data-angle-step="-45" aria-label="Rotate outfit 45 degrees left">‹</button>
+                  <button class="orbit-step next" type="button" data-angle-step="45" aria-label="Rotate outfit 45 degrees right">›</button>
+                  <output class="angle-readout" aria-live="polite">FRONT · 0°</output>
+                </div>
+                <div class="rail-note">
+                  <span class="rail-index">+</span>
+                  <div class="rail-copy"><strong>What's working</strong><p>The clean jacket shape feels polished for a gallery setting.</p></div>
+                </div>
+                <div class="rail-note">
+                  <span class="rail-index">↗</span>
+                  <div class="rail-copy"><strong>Try next time</strong><p>A brighter accent could echo the event's creative mood.</p></div>
+                </div>
+                <div class="fidget-zone result-token">
+                  <span>Fitting token</span>
+                  <button class="fidget" type="button" aria-label="Rotate the fitting token">
+                    <svg viewBox="0 0 48 48" aria-hidden="true">
+                      <g class="wheel" fill="none" stroke="var(--mark)" stroke-width="1.5">
+                        <circle cx="24" cy="24" r="18" stroke-dasharray="3 3"/><circle cx="24" cy="24" r="12"/>
+                        <path d="M24 4v7m0 26v7M4 24h7m26 0h7M10 10l5 5m18 18 5 5m0-28-5 5M15 33l-5 5"/>
+                      </g>
+                      <circle cx="24" cy="24" r="3" fill="var(--ink)"/>
+                    </svg>
+                  </button>
+                  <span>Turn it</span>
+                </div>
+                <div class="result-actions">
+                  <button class="primary" type="button">Check another outfit</button>
+                  <button class="subtle-link" type="button">Save this fit note</button>
+                </div>
+                <p class="sample-note">Sample score and feedback shown for design illustration only.</p>
+              </div>
+              <nav class="tab-bar" aria-label="Main navigation">
+                <button class="tab" type="button"><span class="tab-mark" aria-hidden="true">⌂</span>Check</button>
+                <button class="tab active" type="button"><span class="tab-mark" aria-hidden="true">▤</span>Looks</button>
+                <button class="tab" type="button"><span class="tab-mark" aria-hidden="true">○</span>You</button>
+              </nav>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="web-title">
+      <div class="section-head">
+        <h2 id="web-title">Responsive web · same fitting language</h2>
+        <p>Choose a screen and viewport to inspect the adaptation</p>
+      </div>
+      <div class="web-controls">
+        <div class="control-group" aria-label="Web screen">
+          <button class="view-tab" type="button" data-view="home" aria-pressed="true">Start a fit check</button>
+          <button class="view-tab" type="button" data-view="result" aria-pressed="false">Fit note</button>
+        </div>
+        <div class="control-group" aria-label="Web viewport">
+          <button class="device-tab" type="button" data-device="desktop" aria-pressed="true">Desktop width</button>
+          <button class="device-tab" type="button" data-device="mobile" aria-pressed="false">Mobile width</button>
+        </div>
+      </div>
+
+      <div class="web-frame" id="web-frame">
+        <div class="browser-bar" aria-hidden="true">
+          <span class="browser-dot"></span><span class="browser-dot"></span><span class="browser-dot"></span>
+          <span class="address">suitup.app / fit-check</span>
+        </div>
+        <div class="web-app">
+          <header class="web-nav">
+            <span class="wordmark">suitup<span style="color:var(--mark)">.</span></span>
+            <nav class="web-nav-links" aria-label="Web navigation">
+              <span>New fit check</span><span>My looks</span><span>About</span>
+            </nav>
+            <button class="top-action" type="button" aria-label="Open account">◎</button>
+          </header>
+          <div class="web-body">
+            <section class="web-home" id="web-home">
+              <div>
+                <h3>What are you dressing for?</h3>
+                <p class="lede">A little context makes the advice fit. Start with the occasion, then add your look.</p>
+                <div class="web-fields">
+                  <label class="field-label" for="web-event">Occasion or theme</label>
+                  <button class="occasion-select" id="web-event" type="button"><span>Gallery opening</span><span aria-hidden="true">⌄</span></button>
+                  <p class="sample-note">Choose a dress code or describe the vibe in your own words.</p>
+                  <div class="fidget-zone">
+                    <span>Turn the fitting token</span>
+                    <button class="fidget" type="button" aria-label="Rotate the fitting token">
+                      <svg viewBox="0 0 48 48" aria-hidden="true">
+                        <g class="wheel" fill="none" stroke="var(--mark)" stroke-width="1.5"><circle cx="24" cy="24" r="18" stroke-dasharray="3 3"/><circle cx="24" cy="24" r="12"/><path d="M24 4v7m0 26v7M4 24h7m26 0h7M10 10l5 5m18 18 5 5m0-28-5 5M15 33l-5 5"/></g>
+                        <circle cx="24" cy="24" r="3" fill="var(--ink)"/>
+                      </svg>
+                    </button>
+                    <span>Just for fun</span>
+                  </div>
+                  <button class="primary" type="button" data-preview-result>Get my fit check</button>
+                </div>
+              </div>
+              <div class="web-side">
+                <div class="specimen model-viewer" data-model-viewer aria-label="Synthetic rotating 3D outfit preview">
+                  <canvas class="model-canvas" width="400" height="460" aria-label="Synthetic cartoon-style 3D avatar wearing a sample outfit. Drag to spin it through multiple angles."></canvas>
+                  <span class="model-tip">Synthetic 3D avatar</span>
+                  <button class="orbit-step previous" type="button" data-angle-step="-45" aria-label="Rotate outfit 45 degrees left">‹</button>
+                  <button class="orbit-step next" type="button" data-angle-step="45" aria-label="Rotate outfit 45 degrees right">›</button>
+                  <output class="angle-readout" aria-live="polite">FRONT · 0°</output>
+                </div>
+                <div class="upload-row"><strong>Add your outfit photo</strong><span>Camera or library&nbsp; +</span></div>
+              </div>
+            </section>
+
+            <section class="web-result" id="web-result" hidden>
+              <div class="specimen result-specimen model-viewer" data-model-viewer aria-label="Synthetic rotating 3D outfit preview">
+                <canvas class="model-canvas" width="400" height="460" aria-label="Synthetic cartoon-style 3D avatar wearing a sample outfit. Drag to spin it through multiple angles."></canvas>
+                <span class="model-tip">Synthetic 3D avatar</span>
+                <button class="orbit-step previous" type="button" data-angle-step="-45" aria-label="Rotate outfit 45 degrees left">‹</button>
+                <button class="orbit-step next" type="button" data-angle-step="45" aria-label="Rotate outfit 45 degrees right">›</button>
+                <output class="angle-readout" aria-live="polite">FRONT · 0°</output>
+              </div>
+              <div class="web-side">
+                <div class="result-head">
+                  <div><h3>You're nearly there.</h3><p class="event-label">GALLERY OPENING · YOUR FIT NOTE</p></div>
+                  <div class="score"><strong>8.7</strong><span>out of 10</span></div>
+                </div>
+                <p class="lede">A considered look with room for one more expressive detail.</p>
+                <div class="rail-note"><span class="rail-index">+</span><div class="rail-copy"><strong>What's working</strong><p>The clean jacket shape feels polished for a gallery setting.</p></div></div>
+                <div class="rail-note"><span class="rail-index">↗</span><div class="rail-copy"><strong>Try next time</strong><p>A brighter accent could echo the event's creative mood.</p></div></div>
+                <div class="fidget-zone result-token">
+                  <span>Turn the fitting token</span>
+                  <button class="fidget" type="button" aria-label="Rotate the fitting token">
+                    <svg viewBox="0 0 48 48" aria-hidden="true">
+                      <g class="wheel" fill="none" stroke="var(--mark)" stroke-width="1.5"><circle cx="24" cy="24" r="18" stroke-dasharray="3 3"/><circle cx="24" cy="24" r="12"/><path d="M24 4v7m0 26v7M4 24h7m26 0h7M10 10l5 5m18 18 5 5m0-28-5 5M15 33l-5 5"/></g>
+                      <circle cx="24" cy="24" r="3" fill="var(--ink)"/>
+                    </svg>
+                  </button>
+                  <span>Just for fun</span>
+                </div>
+                <div class="result-actions">
+                  <button class="primary" type="button">Check another outfit</button>
+                  <button class="subtle-link" type="button">Save this fit note</button>
+                </div>
+                <p class="sample-note">Sample score and feedback shown for design illustration only.</p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const themeButton = document.querySelector("#theme-toggle");
+    let outfitAngle = 0;
+
+    const vector = (x, y, z) => ({ x, y, z });
+    const add = (a, b) => vector(a.x + b.x, a.y + b.y, a.z + b.z);
+    const subtract = (a, b) => vector(a.x - b.x, a.y - b.y, a.z - b.z);
+    const multiply = (a, scale) => vector(a.x * scale, a.y * scale, a.z * scale);
+    const cross = (a, b) => vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+    const normalize = (a) => {
+      const length = Math.hypot(a.x, a.y, a.z) || 1;
+      return multiply(a, 1 / length);
+    };
+
+    function shade(hex, amount) {
+      const value = Number.parseInt(hex.slice(1), 16);
+      const channels = [value >> 16, (value >> 8) & 255, value & 255]
+        .map((channel) => Math.max(0, Math.min(255, Math.round(channel * amount))));
+      return `rgb(${channels.join(" ")})`;
+    }
+
+    function drawModel(canvas, angle) {
+      const bounds = canvas.getBoundingClientRect();
+      if (bounds.width < 1 || bounds.height < 1) return;
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(bounds.width * ratio);
+      canvas.height = Math.round(bounds.height * ratio);
+      const context = canvas.getContext("2d");
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      context.clearRect(0, 0, bounds.width, bounds.height);
+
+      const dark = root.dataset.theme === "dark";
+      const colors = {
+        jacket: dark ? "#52647c" : "#435267",
+        shirt: dark ? "#e9e0d3" : "#fffaf1",
+        trousers: dark ? "#303947" : "#354052",
+        skin: dark ? "#b9906c" : "#d7b28c",
+        hair: dark ? "#312722" : "#403029",
+        features: dark ? "#28201d" : "#30251f",
+        shoes: dark ? "#1b1c1d" : "#252422",
+        accent: dark ? "#ff8166" : "#c9442d",
+      };
+      const radians = angle * Math.PI / 180;
+      const cosine = Math.cos(radians);
+      const sine = Math.sin(radians);
+      const scale = Math.min(bounds.width * 0.76, bounds.height * 0.9) / 2.9;
+      const centerX = bounds.width / 2;
+      const centerY = bounds.height * 0.57;
+      const faces = [];
+
+      function project(point) {
+        const x = (point.x * cosine + point.z * sine) * 1.3;
+        const z = -point.x * sine + point.z * cosine;
+        return { x: centerX + x * scale, y: centerY - point.y * scale - z * scale * 0.12, depth: z };
+      }
+
+      function addFace(points, color, normal = vector(0, 0, 1)) {
+        const projected = points.map(project);
+        const depth = projected.reduce((sum, point) => sum + point.depth, 0) / projected.length;
+        const rotatedX = normal.x * cosine + normal.z * sine;
+        const rotatedZ = -normal.x * sine + normal.z * cosine;
+        const lighting = 0.68 + Math.max(0, rotatedZ) * 0.23 + Math.max(0, -rotatedX) * 0.09;
+        faces.push({ projected, depth, color: shade(color, lighting) });
+      }
+
+      function addFrustum(topY, bottomY, topX, topZ, bottomX, bottomZ, color, centerX = 0, centerZ = 0, segments = 14) {
+        const top = [];
+        const bottom = [];
+        for (let i = 0; i < segments; i += 1) {
+          const phi = (i / segments) * Math.PI * 2;
+          top.push(vector(centerX + Math.cos(phi) * topX, topY, centerZ + Math.sin(phi) * topZ));
+          bottom.push(vector(centerX + Math.cos(phi) * bottomX, bottomY, centerZ + Math.sin(phi) * bottomZ));
+        }
+        for (let i = 0; i < segments; i += 1) {
+          const next = (i + 1) % segments;
+          const mid = ((i + 0.5) / segments) * Math.PI * 2;
+          addFace([top[i], top[next], bottom[next], bottom[i]], color, vector(Math.cos(mid), 0, Math.sin(mid)));
+        }
+      }
+
+      function addTube(start, end, startRadius, endRadius, color, segments = 10) {
+        const axis = normalize(subtract(end, start));
+        const helper = Math.abs(axis.z) > 0.88 ? vector(0, 1, 0) : vector(0, 0, 1);
+        const u = normalize(cross(axis, helper));
+        const v = normalize(cross(axis, u));
+        const first = [];
+        const last = [];
+        for (let i = 0; i < segments; i += 1) {
+          const phi = (i / segments) * Math.PI * 2;
+          const radial = add(multiply(u, Math.cos(phi)), multiply(v, Math.sin(phi)));
+          first.push(add(start, multiply(radial, startRadius)));
+          last.push(add(end, multiply(radial, endRadius)));
+        }
+        for (let i = 0; i < segments; i += 1) {
+          const next = (i + 1) % segments;
+          const phi = ((i + 0.5) / segments) * Math.PI * 2;
+          const normal = add(multiply(u, Math.cos(phi)), multiply(v, Math.sin(phi)));
+          addFace([first[i], first[next], last[next], last[i]], color, normal);
+        }
+      }
+
+      function addSphere(center, radii, color, segments = 12, rings = 8) {
+        const rows = [];
+        for (let row = 0; row <= rings; row += 1) {
+          const latitude = -Math.PI / 2 + (row / rings) * Math.PI;
+          const radius = Math.cos(latitude);
+          const y = center.y + Math.sin(latitude) * radii.y;
+          const points = [];
+          for (let i = 0; i < segments; i += 1) {
+            const longitude = (i / segments) * Math.PI * 2;
+            points.push(vector(
+              center.x + Math.cos(longitude) * radius * radii.x,
+              y,
+              center.z + Math.sin(longitude) * radius * radii.z,
+            ));
+          }
+          rows.push(points);
+        }
+        for (let row = 0; row < rings; row += 1) {
+          for (let i = 0; i < segments; i += 1) {
+            const next = (i + 1) % segments;
+            const mid = (i / segments) * Math.PI * 2;
+            addFace([rows[row][i], rows[row][next], rows[row + 1][next], rows[row + 1][i]], color, vector(Math.cos(mid), Math.sin(-Math.PI / 2 + ((row + 0.5) / rings) * Math.PI), Math.sin(mid)));
+          }
+        }
+      }
+
+      function addPanel(points, color) {
+        addFace(points, color, vector(0, 0, 1));
+      }
+
+      const shadow = project(vector(0, -1.3, 0));
+      context.beginPath();
+      context.ellipse(shadow.x, shadow.y + 2, scale * 0.55, scale * 0.12, 0, 0, Math.PI * 2);
+      context.fillStyle = dark ? "rgb(0 0 0 / 28%)" : "rgb(43 34 24 / 17%)";
+      context.fill();
+
+      addFrustum(1.43, 0.56, 0.47, 0.24, 0.32, 0.18, colors.jacket);
+      addFrustum(1.49, 1.30, 0.12, 0.12, 0.12, 0.12, colors.skin, 0, 0, 10);
+      addSphere(vector(0, 1.68, 0), vector(0.29, 0.34, 0.24), colors.skin);
+      addSphere(vector(0, 1.91, -0.015), vector(0.295, 0.18, 0.25), colors.hair);
+      addSphere(vector(-0.235, 1.7, 0), vector(0.09, 0.2, 0.22), colors.hair);
+      addSphere(vector(0.235, 1.7, 0), vector(0.09, 0.2, 0.22), colors.hair);
+      addSphere(vector(-0.31, 1.68, 0), vector(0.05, 0.075, 0.05), colors.skin, 10, 6);
+      addSphere(vector(0.31, 1.68, 0), vector(0.05, 0.075, 0.05), colors.skin, 10, 6);
+      addSphere(vector(-0.105, 1.71, 0.216), vector(0.03, 0.037, 0.022), colors.features, 10, 6);
+      addSphere(vector(0.105, 1.71, 0.216), vector(0.03, 0.037, 0.022), colors.features, 10, 6);
+      addTube(vector(-0.15, 1.78, 0.21), vector(-0.065, 1.79, 0.225), 0.013, 0.011, colors.hair, 8);
+      addTube(vector(0.065, 1.79, 0.225), vector(0.15, 1.78, 0.21), 0.011, 0.013, colors.hair, 8);
+      addSphere(vector(0, 1.63, 0.233), vector(0.036, 0.046, 0.032), colors.skin, 10, 6);
+      addTube(vector(-0.065, 1.55, 0.21), vector(0, 1.535, 0.23), 0.009, 0.01, colors.features, 8);
+      addTube(vector(0, 1.535, 0.23), vector(0.065, 1.55, 0.21), 0.01, 0.009, colors.features, 8);
+      addTube(vector(-0.38, 1.28, 0), vector(-0.53, 0.64, 0.02), 0.135, 0.09, colors.jacket);
+      addTube(vector(0.38, 1.28, 0), vector(0.53, 0.64, 0.02), 0.135, 0.09, colors.jacket);
+      addSphere(vector(-0.55, 0.55, 0.02), vector(0.09, 0.12, 0.085), colors.skin, 10, 6);
+      addSphere(vector(0.55, 0.55, 0.02), vector(0.09, 0.12, 0.085), colors.skin, 10, 6);
+      addTube(vector(-0.17, 0.59, 0), vector(-0.19, -0.79, 0.01), 0.17, 0.115, colors.trousers);
+      addTube(vector(0.17, 0.59, 0), vector(0.19, -0.79, 0.01), 0.17, 0.115, colors.trousers);
+      addTube(vector(-0.19, -0.78, 0.02), vector(-0.25, -0.93, 0.13), 0.12, 0.1, colors.shoes, 8);
+      addTube(vector(0.19, -0.78, 0.02), vector(0.25, -0.93, 0.13), 0.12, 0.1, colors.shoes, 8);
+
+      addPanel([
+        vector(-0.13, 1.36, 0.232), vector(0.13, 1.36, 0.232),
+        vector(0.09, 0.63, 0.185), vector(-0.09, 0.63, 0.185),
+      ], colors.shirt);
+      addPanel([vector(-0.13, 1.38, 0.239), vector(-0.02, 1.17, 0.24), vector(-0.16, 1.25, 0.222)], colors.shirt);
+      addPanel([vector(0.13, 1.38, 0.239), vector(0.02, 1.17, 0.24), vector(0.16, 1.25, 0.222)], colors.shirt);
+      addPanel([vector(0.19, 1.16, 0.235), vector(0.30, 1.16, 0.219), vector(0.30, 1.09, 0.219), vector(0.19, 1.09, 0.235)], colors.accent);
+
+      faces.sort((a, b) => a.depth - b.depth);
+      for (const face of faces) {
+        context.beginPath();
+        context.moveTo(face.projected[0].x, face.projected[0].y);
+        for (let i = 1; i < face.projected.length; i += 1) {
+          context.lineTo(face.projected[i].x, face.projected[i].y);
+        }
+        context.closePath();
+        context.fillStyle = face.color;
+        context.fill();
+      }
+    }
+
+    function describeAngle(angle) {
+      const names = ["FRONT", "FRONT ¾", "SIDE", "BACK ¾", "BACK", "BACK ¾", "SIDE", "FRONT ¾"];
+      return `${names[Math.round(angle / 45) % 8]} · ${Math.round(angle)}°`;
+    }
+
+    function renderModels() {
+      document.querySelectorAll("[data-model-viewer]").forEach((viewer) => {
+        const canvas = viewer.querySelector(".model-canvas");
+        if (canvas.getBoundingClientRect().width < 1) return;
+        drawModel(canvas, outfitAngle);
+        viewer.querySelector(".angle-readout").textContent = describeAngle(outfitAngle);
+      });
+    }
+
+    document.querySelectorAll("[data-model-viewer]").forEach((viewer) => {
+      const canvas = viewer.querySelector(".model-canvas");
+      let dragX = null;
+      canvas.addEventListener("pointerdown", (event) => {
+        dragX = event.clientX;
+        canvas.setPointerCapture(event.pointerId);
+      });
+      canvas.addEventListener("pointermove", (event) => {
+        if (dragX === null) return;
+        const movement = event.clientX - dragX;
+        if (Math.abs(movement) < 0.4) return;
+        outfitAngle = (outfitAngle + movement * 0.9 + 360) % 360;
+        dragX = event.clientX;
+        renderModels();
+      });
+      canvas.addEventListener("pointerup", () => { dragX = null; });
+      canvas.addEventListener("pointercancel", () => { dragX = null; });
+      viewer.querySelectorAll("[data-angle-step]").forEach((button) => {
+        button.addEventListener("click", () => {
+          outfitAngle = (outfitAngle + Number(button.dataset.angleStep) + 360) % 360;
+          renderModels();
+        });
+      });
+    });
+
+    themeButton.addEventListener("click", () => {
+      const dark = root.dataset.theme !== "dark";
+      root.dataset.theme = dark ? "dark" : "light";
+      themeButton.textContent = dark ? "Switch to light" : "Switch to dark";
+      themeButton.setAttribute("aria-pressed", String(dark));
+      renderModels();
+    });
+
+    document.querySelectorAll(".fidget").forEach((button) => {
+      button.addEventListener("click", () => button.classList.toggle("is-spun"));
+      let previousX = null;
+      button.addEventListener("pointerdown", (event) => { previousX = event.clientX; });
+      button.addEventListener("pointermove", (event) => {
+        if (previousX === null || !(event.buttons & 1)) return;
+        if (Math.abs(event.clientX - previousX) > 2) {
+          button.classList.toggle("is-spun");
+          previousX = event.clientX;
+        }
+      });
+      button.addEventListener("pointerup", () => { previousX = null; });
+      button.addEventListener("pointercancel", () => { previousX = null; });
+    });
+
+    document.querySelectorAll("[data-view]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const showResult = button.dataset.view === "result";
+        document.querySelector("#web-home").hidden = showResult;
+        document.querySelector("#web-result").hidden = !showResult;
+        document.querySelectorAll("[data-view]").forEach((tab) => {
+          tab.setAttribute("aria-pressed", String(tab === button));
+        });
+        renderModels();
+      });
+    });
+
+    document.querySelectorAll("[data-device]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const mobile = button.dataset.device === "mobile";
+        document.querySelector("#web-frame").classList.toggle("mobile-preview", mobile);
+        document.querySelectorAll("[data-device]").forEach((tab) => {
+          tab.setAttribute("aria-pressed", String(tab === button));
+        });
+        renderModels();
+      });
+    });
+
+    document.querySelector("[data-preview-result]").addEventListener("click", () => {
+      document.querySelector("#web-home").hidden = true;
+      document.querySelector("#web-result").hidden = false;
+      document.querySelectorAll("[data-view]").forEach((tab) => {
+        tab.setAttribute("aria-pressed", String(tab.dataset.view === "result"));
+      });
+      renderModels();
+    });
+
+    window.addEventListener("resize", renderModels);
+    renderModels();
+  </script>
+</body>
+</html>
