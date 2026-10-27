@@ -20,9 +20,9 @@ The app name `SuitUp` is inferred from the repository name and is not yet confir
 
 ## First-pass design
 
-Open [`design/first-pass-mockup.html`](design/first-pass-mockup.html) for the iOS home and fit-note screens and the responsive web adaptation. The mockup uses an annotated fitting-sheet concept, includes light/dark previews, a rotatable, cartoon-style 3D avatar, and a separate fidget token. The sample avatar and rating are synthetic; the avatar is an original generic concept, not a copy of an existing character brand. This is a design artifact for review, not production app code.
+Open [`mockups/first-pass-mockup.html`](mockups/first-pass-mockup.html) for the iOS home and fit-note screens and the responsive web adaptation. The mockup uses an annotated fitting-sheet concept, includes light/dark previews, a rotatable, cartoon-style 3D avatar, and a separate fidget token. The sample avatar and rating are synthetic; the avatar is an original generic concept, not a copy of an existing character brand. This is a design artifact for review, not production app code.
 
-PNG captures of the iOS screens and desktop/mobile web screens in both themes are in [`design/screenshots/`](design/screenshots/). See the [design record and screenshot gallery](docs/design.md).
+PNG captures of the iOS screens and desktop/mobile web screens in both themes are in [`mockups/`](mockups/). See the [design record and screenshot gallery](docs/design.md).
 
 ## Product and design documentation
 
@@ -31,4 +31,4 @@ PNG captures of the iOS screens and desktop/mobile web screens in both themes ar
 - [Agent swarm charters](.github/agents/README.md)
 - [Shared SDLC workflow](docs/sdlc-workflow.md)
 
-Keep project documentation in `docs/` and mockups and their PNG screenshots in `design/`. The root README remains the entry point; GitHub agent definitions and repository instructions remain in `.github/` for discovery.
+Keep project documentation in `docs/` and HTML mockups and their PNG screenshots in `mockups/`. The root README remains the entry point; GitHub agent definitions and repository instructions remain in `.github/` for discovery.

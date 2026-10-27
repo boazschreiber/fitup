@@ -8,4 +8,4 @@ Keep project documentation in this directory. The root README is the repository 
 - [Lessons learned](lessons-learned.md): accepted reusable lessons and charter approval workflow.
 - [Agent roster and charters](../.github/agents/README.md): role purposes, responsibilities, and boundaries.
 
-Mockups belong in [`design/`](../design/) and PNG captures in [`design/screenshots/`](../design/screenshots/).
+HTML mockups and PNG captures belong in [`mockups/`](../mockups/).
