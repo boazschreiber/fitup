@@ -570,7 +570,7 @@
       </div>
     </header>
 
-    <p class="approval-note"><strong>Design mockup — approved October 25, 2026.</strong> This is a visual mockup, not a working outfit-rating app. The rotatable cartoon-style 3D avatar and 8.7 score are synthetic examples.</p>
+    <p class="approval-note"><strong>Design mockup — approved October 25, 2026.</strong> This is a visual mockup, not a working outfit-rating app. The rotatable Bitmoji-style 3D avatar (original artwork, revised October 26, 2026) and 8.7 score are synthetic examples.</p>
 
     <section aria-labelledby="ios-title">
       <div class="section-head">
@@ -595,7 +595,7 @@
                   <span>Gallery opening</span><span aria-hidden="true">⌄</span>
                 </button>
                 <div class="specimen model-viewer" data-model-viewer aria-label="Synthetic rotating 3D outfit preview">
-                  <canvas class="model-canvas" width="320" height="380" aria-label="Synthetic cartoon-style 3D avatar wearing a sample outfit. Drag to spin it through multiple angles."></canvas>
+                  <canvas class="model-canvas" width="320" height="380" aria-label="Synthetic Bitmoji-style 3D avatar wearing a sample outfit. Drag to spin it through multiple angles."></canvas>
                   <span class="model-tip">Synthetic 3D avatar</span>
                   <button class="orbit-step previous" type="button" data-angle-step="-45" aria-label="Rotate outfit 45 degrees left">‹</button>
                   <button class="orbit-step next" type="button" data-angle-step="45" aria-label="Rotate outfit 45 degrees right">›</button>
@@ -647,7 +647,7 @@
                   <div class="score"><strong>8.7</strong><span>out of 10</span></div>
                 </div>
                 <div class="specimen result-specimen model-viewer" data-model-viewer aria-label="Synthetic rotating 3D outfit preview">
-                  <canvas class="model-canvas" width="320" height="380" aria-label="Synthetic cartoon-style 3D avatar wearing a sample outfit. Drag to spin it through multiple angles."></canvas>
+                  <canvas class="model-canvas" width="320" height="380" aria-label="Synthetic Bitmoji-style 3D avatar wearing a sample outfit. Drag to spin it through multiple angles."></canvas>
                   <span class="model-tip">Synthetic 3D avatar</span>
                   <button class="orbit-step previous" type="button" data-angle-step="-45" aria-label="Rotate outfit 45 degrees left">‹</button>
                   <button class="orbit-step next" type="button" data-angle-step="45" aria-label="Rotate outfit 45 degrees right">›</button>
@@ -744,7 +744,7 @@
               </div>
               <div class="web-side">
                 <div class="specimen model-viewer" data-model-viewer aria-label="Synthetic rotating 3D outfit preview">
-                  <canvas class="model-canvas" width="400" height="460" aria-label="Synthetic cartoon-style 3D avatar wearing a sample outfit. Drag to spin it through multiple angles."></canvas>
+                  <canvas class="model-canvas" width="400" height="460" aria-label="Synthetic Bitmoji-style 3D avatar wearing a sample outfit. Drag to spin it through multiple angles."></canvas>
                   <span class="model-tip">Synthetic 3D avatar</span>
                   <button class="orbit-step previous" type="button" data-angle-step="-45" aria-label="Rotate outfit 45 degrees left">‹</button>
                   <button class="orbit-step next" type="button" data-angle-step="45" aria-label="Rotate outfit 45 degrees right">›</button>
@@ -756,7 +756,7 @@
 
             <section class="web-result" id="web-result" hidden>
               <div class="specimen result-specimen model-viewer" data-model-viewer aria-label="Synthetic rotating 3D outfit preview">
-                <canvas class="model-canvas" width="400" height="460" aria-label="Synthetic cartoon-style 3D avatar wearing a sample outfit. Drag to spin it through multiple angles."></canvas>
+                <canvas class="model-canvas" width="400" height="460" aria-label="Synthetic Bitmoji-style 3D avatar wearing a sample outfit. Drag to spin it through multiple angles."></canvas>
                 <span class="model-tip">Synthetic 3D avatar</span>
                 <button class="orbit-step previous" type="button" data-angle-step="-45" aria-label="Rotate outfit 45 degrees left">‹</button>
                 <button class="orbit-step next" type="button" data-angle-step="45" aria-label="Rotate outfit 45 degrees right">›</button>
@@ -798,16 +798,6 @@
     const themeButton = document.querySelector("#theme-toggle");
     let outfitAngle = 0;
 
-    const vector = (x, y, z) => ({ x, y, z });
-    const add = (a, b) => vector(a.x + b.x, a.y + b.y, a.z + b.z);
-    const subtract = (a, b) => vector(a.x - b.x, a.y - b.y, a.z - b.z);
-    const multiply = (a, scale) => vector(a.x * scale, a.y * scale, a.z * scale);
-    const cross = (a, b) => vector(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
-    const normalize = (a) => {
-      const length = Math.hypot(a.x, a.y, a.z) || 1;
-      return multiply(a, 1 / length);
-    };
-
     function shade(hex, amount) {
       const value = Number.parseInt(hex.slice(1), 16);
       const channels = [value >> 16, (value >> 8) & 255, value & 255]
@@ -821,159 +811,349 @@
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(bounds.width * ratio);
       canvas.height = Math.round(bounds.height * ratio);
-      const context = canvas.getContext("2d");
-      context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      context.clearRect(0, 0, bounds.width, bounds.height);
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.clearRect(0, 0, bounds.width, bounds.height);
 
       const dark = root.dataset.theme === "dark";
       const colors = {
-        jacket: dark ? "#52647c" : "#435267",
-        shirt: dark ? "#e9e0d3" : "#fffaf1",
-        trousers: dark ? "#303947" : "#354052",
-        skin: dark ? "#b9906c" : "#d7b28c",
-        hair: dark ? "#312722" : "#403029",
-        features: dark ? "#28201d" : "#30251f",
-        shoes: dark ? "#1b1c1d" : "#252422",
+        jacket: dark ? "#5a6f8c" : "#46597a",
+        shirt: dark ? "#f1e9dc" : "#fffaf1",
+        trousers: dark ? "#353f50" : "#323d52",
+        skin: dark ? "#d2a27c" : "#e8b896",
+        blush: "#f08a7a",
+        hair: dark ? "#3b2a22" : "#4a3227",
+        iris: "#5a3a26",
+        ink: "#2a1d18",
+        lip: "#b8574c",
+        shoes: dark ? "#d9cbb6" : "#2b2622",
+        sole: dark ? "#f5eee4" : "#f2ebe0",
         accent: dark ? "#ff8166" : "#c9442d",
       };
-      const radians = angle * Math.PI / 180;
-      const cosine = Math.cos(radians);
-      const sine = Math.sin(radians);
-      const scale = Math.min(bounds.width * 0.76, bounds.height * 0.9) / 2.9;
-      const centerX = bounds.width / 2;
-      const centerY = bounds.height * 0.57;
-      const faces = [];
 
-      function project(point) {
-        const x = (point.x * cosine + point.z * sine) * 1.3;
-        const z = -point.x * sine + point.z * cosine;
-        return { x: centerX + x * scale, y: centerY - point.y * scale - z * scale * 0.12, depth: z };
+      const a = angle * Math.PI / 180;
+      const cos = Math.cos(a);
+      const sin = Math.sin(a);
+      const s = Math.min(bounds.width / 1.45, bounds.height / 3.8);
+      const cx = bounds.width / 2;
+      const midY = 0.48;
+      const clamp = (v, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, v));
+
+      // World point -> screen. Rotation is around the vertical axis; a slight top-down tilt sells depth.
+      const rot = (x, z) => ({ x: x * cos + z * sin, z: -x * sin + z * cos });
+      const P = (x, y, z = 0) => {
+        const r = rot(x, z);
+        return { x: cx + r.x * s, y: bounds.height / 2 - (y - midY) * s - r.z * s * 0.06, z: r.z };
+      };
+      const halfWidth = (rx, rz) => Math.hypot(rx * cos, rz * sin);
+
+      function ball(px, py, rx, ry, color, light = 1.14, darkness = 0.8) {
+        const g = ctx.createRadialGradient(px - rx * 0.35, py - ry * 0.4, Math.min(rx, ry) * 0.1, px, py, Math.max(rx, ry) * 1.05);
+        g.addColorStop(0, shade(color, light));
+        g.addColorStop(0.6, shade(color, 1));
+        g.addColorStop(1, shade(color, darkness));
+        ctx.beginPath();
+        ctx.ellipse(px, py, Math.max(rx, 0.1), Math.max(ry, 0.1), 0, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
       }
 
-      function addFace(points, color, normal = vector(0, 0, 1)) {
-        const projected = points.map(project);
-        const depth = projected.reduce((sum, point) => sum + point.depth, 0) / projected.length;
-        const rotatedX = normal.x * cosine + normal.z * sine;
-        const rotatedZ = -normal.x * sine + normal.z * cosine;
-        const lighting = 0.68 + Math.max(0, rotatedZ) * 0.23 + Math.max(0, -rotatedX) * 0.09;
-        faces.push({ projected, depth, color: shade(color, lighting) });
+      function capsule(p1, p2, r1, r2, color) {
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        const len = Math.hypot(dx, dy) || 1;
+        const nx = -dy / len;
+        const ny = dx / len;
+        const an = Math.atan2(ny, nx);
+        ctx.beginPath();
+        ctx.moveTo(p1.x + nx * r1, p1.y + ny * r1);
+        ctx.lineTo(p2.x + nx * r2, p2.y + ny * r2);
+        ctx.arc(p2.x, p2.y, r2, an, an + Math.PI, true);
+        ctx.lineTo(p1.x - nx * r1, p1.y - ny * r1);
+        ctx.arc(p1.x, p1.y, r1, an + Math.PI, an, true);
+        ctx.closePath();
+        const lightSide = nx < 0 ? 1 : -1;
+        const g = ctx.createLinearGradient(p1.x + nx * r1 * lightSide, p1.y + ny * r1 * lightSide, p1.x - nx * r1 * lightSide, p1.y - ny * r1 * lightSide);
+        g.addColorStop(0, shade(color, 1.16));
+        g.addColorStop(0.45, shade(color, 1));
+        g.addColorStop(1, shade(color, 0.74));
+        ctx.fillStyle = g;
+        ctx.fill();
       }
 
-      function addFrustum(topY, bottomY, topX, topZ, bottomX, bottomZ, color, centerX = 0, centerZ = 0, segments = 14) {
-        const top = [];
-        const bottom = [];
-        for (let i = 0; i < segments; i += 1) {
-          const phi = (i / segments) * Math.PI * 2;
-          top.push(vector(centerX + Math.cos(phi) * topX, topY, centerZ + Math.sin(phi) * topZ));
-          bottom.push(vector(centerX + Math.cos(phi) * bottomX, bottomY, centerZ + Math.sin(phi) * bottomZ));
-        }
-        for (let i = 0; i < segments; i += 1) {
-          const next = (i + 1) % segments;
-          const mid = ((i + 0.5) / segments) * Math.PI * 2;
-          addFace([top[i], top[next], bottom[next], bottom[i]], color, vector(Math.cos(mid), 0, Math.sin(mid)));
-        }
+      // Ground shadow
+      const foot = P(0, -1.22);
+      ctx.beginPath();
+      ctx.ellipse(foot.x, foot.y + 2, s * 0.5, s * 0.1, 0, 0, Math.PI * 2);
+      ctx.fillStyle = dark ? "rgb(0 0 0 / 30%)" : "rgb(43 34 24 / 16%)";
+      ctx.fill();
+
+      // Legs and shoes, nearest leg last
+      const legs = [-1, 1].map((side) => ({ side, z: rot(side * 0.15, 0).z })).sort((p, q) => p.z - q.z);
+      for (const { side } of legs) {
+        capsule(P(side * 0.15, 0.42), P(side * 0.16, -1.0), 0.155 * s, 0.125 * s, colors.trousers);
+        const shoe = P(side * 0.165, -1.1, 0.07);
+        const w = halfWidth(0.125, 0.22) * s;
+        ball(shoe.x, shoe.y + 0.035 * s, w, 0.05 * s, colors.sole, 1.02, 0.86);
+        ball(shoe.x, shoe.y, w * 0.96, 0.085 * s, colors.shoes, 1.25, 0.78);
       }
 
-      function addTube(start, end, startRadius, endRadius, color, segments = 10) {
-        const axis = normalize(subtract(end, start));
-        const helper = Math.abs(axis.z) > 0.88 ? vector(0, 1, 0) : vector(0, 0, 1);
-        const u = normalize(cross(axis, helper));
-        const v = normalize(cross(axis, u));
-        const first = [];
-        const last = [];
-        for (let i = 0; i < segments; i += 1) {
-          const phi = (i / segments) * Math.PI * 2;
-          const radial = add(multiply(u, Math.cos(phi)), multiply(v, Math.sin(phi)));
-          first.push(add(start, multiply(radial, startRadius)));
-          last.push(add(end, multiply(radial, endRadius)));
+      // Arms: the ones turned away go behind the torso
+      const arms = [-1, 1].map((side) => ({ side, z: rot(side * 0.45, 0).z }));
+      function drawArm(side) {
+        const shoulder = P(side * 0.43, 1.1);
+        const elbow = P(side * 0.53, 0.72, 0.02);
+        const hand = P(side * 0.56, 0.4, 0.05);
+        capsule(shoulder, elbow, 0.135 * s, 0.112 * s, colors.jacket);
+        capsule(elbow, P(side * 0.555, 0.5, 0.04), 0.112 * s, 0.1 * s, colors.jacket);
+        ball(hand.x, hand.y, 0.088 * s, 0.098 * s, colors.skin);
+      }
+      arms.filter((arm) => arm.z < -0.05).forEach((arm) => drawArm(arm.side));
+
+      // Neck
+      capsule(P(0, 1.12), P(0, 1.4), 0.105 * s, 0.1 * s, colors.skin);
+
+      // Torso (blazer), projected elliptical cross-sections at shoulder and hem
+      const yS = 1.2;
+      const yH = 0.33;
+      const ws = halfWidth(0.45, 0.25) * s;
+      const wh = halfWidth(0.36, 0.22) * s;
+      const top = P(0, yS).y;
+      const hem = P(0, yH).y;
+      ctx.beginPath();
+      ctx.moveTo(cx - ws * 0.3, top - 0.03 * s);
+      ctx.quadraticCurveTo(cx - ws * 0.95, top - 0.02 * s, cx - ws, top + 0.16 * s);
+      ctx.quadraticCurveTo(cx - ws * 0.92, (top + hem) / 2, cx - wh, hem - 0.04 * s);
+      ctx.quadraticCurveTo(cx, hem + 0.08 * s, cx + wh, hem - 0.04 * s);
+      ctx.quadraticCurveTo(cx + ws * 0.92, (top + hem) / 2, cx + ws, top + 0.16 * s);
+      ctx.quadraticCurveTo(cx + ws * 0.95, top - 0.02 * s, cx + ws * 0.3, top - 0.03 * s);
+      ctx.closePath();
+      const tg = ctx.createLinearGradient(cx - ws, 0, cx + ws, 0);
+      tg.addColorStop(0, shade(colors.jacket, 1.12));
+      tg.addColorStop(0.5, shade(colors.jacket, 1));
+      tg.addColorStop(1, shade(colors.jacket, 0.76));
+      ctx.fillStyle = tg;
+      ctx.fill();
+
+      // Front details fade with how much the chest faces the camera; back seam on the reverse
+      const front = clamp(cos * 1.6);
+      const back = clamp(-cos * 1.6);
+      const poly = (pts, color, alpha) => {
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        pts.forEach(([x, y, z], i) => {
+          const p = P(x, y, z);
+          if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+        });
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      };
+      if (front > 0) {
+        poly([[-0.13, 1.22, 0.24], [0.13, 1.22, 0.24], [0, 0.74, 0.25]], colors.shirt, front);
+        poly([[-0.04, 1.14, 0.26], [0.04, 1.14, 0.26], [0.06, 0.82, 0.26], [0, 0.74, 0.26], [-0.06, 0.82, 0.26]], colors.accent, front);
+        poly([[-0.14, 1.23, 0.245], [-0.03, 0.9, 0.25], [-0.02, 0.74, 0.25], [-0.22, 1.0, 0.24]], shade(colors.jacket, 0.82), front);
+        poly([[0.14, 1.23, 0.245], [0.03, 0.9, 0.25], [0.02, 0.74, 0.25], [0.22, 1.0, 0.24]], shade(colors.jacket, 0.72), front);
+        poly([[0.2, 0.98, 0.235], [0.31, 0.98, 0.215], [0.29, 0.91, 0.215], [0.2, 0.93, 0.235]], colors.shirt, front * 0.95);
+        [0.62, 0.48].forEach((y) => {
+          const b = P(0.015, y, 0.25);
+          ctx.globalAlpha = front;
+          ball(b.x, b.y, 0.024 * s, 0.024 * s, shade(colors.jacket, 0.55));
+          ctx.globalAlpha = 1;
+        });
+      }
+      if (back > 0) {
+        ctx.globalAlpha = back * 0.5;
+        ctx.strokeStyle = shade(colors.jacket, 0.65);
+        ctx.lineWidth = Math.max(1, s * 0.012);
+        ctx.beginPath();
+        const s1 = P(0, 1.16, -0.25);
+        const s2 = P(0, 0.42, -0.22);
+        ctx.moveTo(s1.x, s1.y);
+        ctx.lineTo(s2.x, s2.y);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+      arms.filter((arm) => arm.z >= -0.05).sort((p, q) => p.z - q.z).forEach((arm) => drawArm(arm.side));
+
+      // Head: oversized and friendly, with features mapped onto its surface so they turn with it
+      const head = { y: 1.72, rx: 0.37, ry: 0.42, rz: 0.35 };
+      const hc = P(0, head.y);
+      const hw = halfWidth(head.rx, head.rz) * s;
+      const hh = head.ry * s;
+      const onHead = (lambda, h, out = 1) => {
+        const x = head.rx * Math.sin(lambda) * out;
+        const z = head.rz * Math.cos(lambda) * out;
+        const r = rot(x, z);
+        return { x: cx + r.x * s, y: hc.y - h * hh, facing: Math.cos(lambda + a) };
+      };
+      const headPath = (scaleX = 1, scaleY = 1, offsetY = 0) => {
+        ctx.beginPath();
+        for (let i = 0; i <= 48; i += 1) {
+          const t = (i / 48) * Math.PI * 2;
+          const up = -Math.sin(t);
+          const widen = up > 0 ? 1 : 1 - 0.14 * up * up;
+          const x = hc.x + Math.cos(t) * hw * scaleX * widen;
+          const y = hc.y + offsetY + Math.sin(t) * hh * scaleY;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
-        for (let i = 0; i < segments; i += 1) {
-          const next = (i + 1) % segments;
-          const phi = ((i + 0.5) / segments) * Math.PI * 2;
-          const normal = add(multiply(u, Math.cos(phi)), multiply(v, Math.sin(phi)));
-          addFace([first[i], first[next], last[next], last[i]], color, normal);
-        }
+        ctx.closePath();
+      };
+
+      // Hair volume behind the head
+      const hairVolume = () => {
+        ctx.beginPath();
+        ctx.ellipse(hc.x, hc.y - hh * 0.22, hw * 1.1, hh * 0.92, 0, 0, Math.PI * 2);
+      };
+      hairVolume();
+      ctx.fillStyle = shade(colors.hair, 0.85);
+      ctx.fill();
+
+      const ears = [-1, 1].map((side) => {
+        const p = onHead(side * Math.PI / 2, -0.05, 0.97);
+        return { ...p, side };
+      });
+      const drawEar = (ear) => {
+        const width = (0.07 + 0.04 * Math.abs(ear.facing - 0)) * s;
+        ball(ear.x, ear.y, width * 0.9, 0.12 * s, colors.skin, 1.08, 0.82);
+        ctx.globalAlpha = 0.35;
+        ball(ear.x, ear.y + 0.01 * s, width * 0.45, 0.065 * s, shade(colors.skin, 0.75));
+        ctx.globalAlpha = 1;
+      };
+      ears.filter((ear) => ear.facing <= 0.15).forEach(drawEar);
+
+      headPath();
+      const hg = ctx.createRadialGradient(hc.x - hw * 0.3, hc.y - hh * 0.3, hw * 0.1, hc.x, hc.y, hw * 1.15);
+      hg.addColorStop(0, shade(colors.skin, 1.1));
+      hg.addColorStop(0.65, shade(colors.skin, 1));
+      hg.addColorStop(1, shade(colors.skin, 0.84));
+      ctx.fillStyle = hg;
+      ctx.fill();
+      ears.filter((ear) => ear.facing > 0.15).forEach(drawEar);
+
+      // Face
+      const feature = (lambda, h) => onHead(lambda, h);
+      [-1, 1].forEach((side) => {
+        const c = feature(side * 0.52, -0.3);
+        if (c.facing <= 0.1) return;
+        ctx.globalAlpha = 0.28 * clamp(c.facing * 2);
+        ball(c.x, c.y, 0.075 * s * c.facing, 0.045 * s, colors.blush, 1, 1);
+        ctx.globalAlpha = 1;
+      });
+      [-1, 1].forEach((side) => {
+        const e = feature(side * 0.36, 0.02);
+        if (e.facing <= 0.12) return;
+        const k = clamp(e.facing * 1.8);
+        const ew = 0.085 * s * e.facing;
+        const eh = 0.1 * s;
+        ctx.globalAlpha = k;
+        ctx.beginPath();
+        ctx.ellipse(e.x, e.y, ew, eh, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "#fffdf9";
+        ctx.fill();
+        const look = -sin * 0.25;
+        ctx.beginPath();
+        ctx.ellipse(e.x + ew * look, e.y + eh * 0.12, ew * 0.66, eh * 0.7, 0, 0, Math.PI * 2);
+        ctx.fillStyle = colors.iris;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(e.x + ew * look, e.y + eh * 0.14, ew * 0.36, eh * 0.38, 0, 0, Math.PI * 2);
+        ctx.fillStyle = colors.ink;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(e.x + ew * (look - 0.22), e.y - eh * 0.12, ew * 0.2, eh * 0.18, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        // Upper lid line
+        ctx.beginPath();
+        ctx.ellipse(e.x, e.y, ew * 1.04, eh * 1.02, 0, Math.PI * 1.08, Math.PI * 1.92);
+        ctx.strokeStyle = colors.ink;
+        ctx.lineWidth = Math.max(1.2, s * 0.026);
+        ctx.lineCap = "round";
+        ctx.stroke();
+        // Brow
+        const b1 = feature(side * 0.2, 0.3);
+        const b2 = feature(side * 0.5, 0.31);
+        const bm = feature(side * 0.35, 0.37);
+        ctx.beginPath();
+        ctx.moveTo(b1.x, b1.y);
+        ctx.quadraticCurveTo(bm.x, bm.y, b2.x, b2.y);
+        ctx.strokeStyle = colors.hair;
+        ctx.lineWidth = Math.max(1.6, s * 0.04);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      });
+      const nose = feature(0, -0.2);
+      if (nose.facing > 0.1) {
+        ctx.globalAlpha = clamp(nose.facing * 1.5) * 0.55;
+        ctx.beginPath();
+        ctx.arc(nose.x + sin * 0.02 * s, nose.y, 0.035 * s, Math.PI * 0.15, Math.PI * 0.85);
+        ctx.strokeStyle = shade(colors.skin, 0.62);
+        ctx.lineWidth = Math.max(1, s * 0.018);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+      const ml = feature(-0.3, -0.42);
+      const mr = feature(0.3, -0.42);
+      const mc = feature(0, -0.62);
+      const mt = feature(0, -0.44);
+      if (mt.facing > 0.15) {
+        ctx.globalAlpha = clamp(mt.facing * 1.6);
+        ctx.beginPath();
+        ctx.moveTo(ml.x, ml.y);
+        ctx.quadraticCurveTo(mt.x, mt.y + 0.012 * s, mr.x, mr.y);
+        ctx.quadraticCurveTo(mc.x, mc.y + 0.07 * s, ml.x, ml.y);
+        ctx.closePath();
+        ctx.fillStyle = "#7a2f2a";
+        ctx.fill();
+        ctx.save();
+        ctx.clip();
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(Math.min(ml.x, mr.x) - 2, mt.y - 0.02 * s, Math.abs(mr.x - ml.x) + 4, 0.045 * s);
+        ctx.beginPath();
+        ctx.ellipse(mc.x, mc.y + 0.02 * s, Math.abs(mr.x - ml.x) * 0.28, 0.035 * s, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "#e0736a";
+        ctx.fill();
+        ctx.restore();
+        ctx.globalAlpha = 1;
       }
 
-      function addSphere(center, radii, color, segments = 12, rings = 8) {
-        const rows = [];
-        for (let row = 0; row <= rings; row += 1) {
-          const latitude = -Math.PI / 2 + (row / rings) * Math.PI;
-          const radius = Math.cos(latitude);
-          const y = center.y + Math.sin(latitude) * radii.y;
-          const points = [];
-          for (let i = 0; i < segments; i += 1) {
-            const longitude = (i / segments) * Math.PI * 2;
-            points.push(vector(
-              center.x + Math.cos(longitude) * radius * radii.x,
-              y,
-              center.z + Math.sin(longitude) * radius * radii.z,
-            ));
-          }
-          rows.push(points);
-        }
-        for (let row = 0; row < rings; row += 1) {
-          for (let i = 0; i < segments; i += 1) {
-            const next = (i + 1) % segments;
-            const mid = (i / segments) * Math.PI * 2;
-            addFace([rows[row][i], rows[row][next], rows[row + 1][next], rows[row + 1][i]], color, vector(Math.cos(mid), Math.sin(-Math.PI / 2 + ((row + 0.5) / rings) * Math.PI), Math.sin(mid)));
-          }
-        }
+      // Hair cap: fill above a hairline that sits on the forehead in front and drops to the nape behind
+      ctx.save();
+      hairVolume();
+      ctx.clip();
+      ctx.beginPath();
+      const steps = 40;
+      const span = hw * 1.12;
+      for (let i = 0; i <= steps; i += 1) {
+        const u = -1 + (i / steps) * 2;
+        const view = Math.asin(clamp(u * 1.12 / 1.12, -1, 1));
+        const lambda = view - a;
+        const f = (1 + Math.cos(lambda)) / 2;
+        let h = -0.6 + f * 0.95;
+        h += f * f * 0.12 * Math.sin(lambda * 2.4 + 0.9);
+        const x = hc.x + u * span;
+        const y = hc.y - h * hh;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
-
-      function addPanel(points, color) {
-        addFace(points, color, vector(0, 0, 1));
-      }
-
-      const shadow = project(vector(0, -1.3, 0));
-      context.beginPath();
-      context.ellipse(shadow.x, shadow.y + 2, scale * 0.55, scale * 0.12, 0, 0, Math.PI * 2);
-      context.fillStyle = dark ? "rgb(0 0 0 / 28%)" : "rgb(43 34 24 / 17%)";
-      context.fill();
-
-      addFrustum(1.43, 0.56, 0.47, 0.24, 0.32, 0.18, colors.jacket);
-      addFrustum(1.49, 1.30, 0.12, 0.12, 0.12, 0.12, colors.skin, 0, 0, 10);
-      addSphere(vector(0, 1.68, 0), vector(0.29, 0.34, 0.24), colors.skin);
-      addSphere(vector(0, 1.91, -0.015), vector(0.295, 0.18, 0.25), colors.hair);
-      addSphere(vector(-0.235, 1.7, 0), vector(0.09, 0.2, 0.22), colors.hair);
-      addSphere(vector(0.235, 1.7, 0), vector(0.09, 0.2, 0.22), colors.hair);
-      addSphere(vector(-0.31, 1.68, 0), vector(0.05, 0.075, 0.05), colors.skin, 10, 6);
-      addSphere(vector(0.31, 1.68, 0), vector(0.05, 0.075, 0.05), colors.skin, 10, 6);
-      addSphere(vector(-0.105, 1.71, 0.216), vector(0.03, 0.037, 0.022), colors.features, 10, 6);
-      addSphere(vector(0.105, 1.71, 0.216), vector(0.03, 0.037, 0.022), colors.features, 10, 6);
-      addTube(vector(-0.15, 1.78, 0.21), vector(-0.065, 1.79, 0.225), 0.013, 0.011, colors.hair, 8);
-      addTube(vector(0.065, 1.79, 0.225), vector(0.15, 1.78, 0.21), 0.011, 0.013, colors.hair, 8);
-      addSphere(vector(0, 1.63, 0.233), vector(0.036, 0.046, 0.032), colors.skin, 10, 6);
-      addTube(vector(-0.065, 1.55, 0.21), vector(0, 1.535, 0.23), 0.009, 0.01, colors.features, 8);
-      addTube(vector(0, 1.535, 0.23), vector(0.065, 1.55, 0.21), 0.01, 0.009, colors.features, 8);
-      addTube(vector(-0.38, 1.28, 0), vector(-0.53, 0.64, 0.02), 0.135, 0.09, colors.jacket);
-      addTube(vector(0.38, 1.28, 0), vector(0.53, 0.64, 0.02), 0.135, 0.09, colors.jacket);
-      addSphere(vector(-0.55, 0.55, 0.02), vector(0.09, 0.12, 0.085), colors.skin, 10, 6);
-      addSphere(vector(0.55, 0.55, 0.02), vector(0.09, 0.12, 0.085), colors.skin, 10, 6);
-      addTube(vector(-0.17, 0.59, 0), vector(-0.19, -0.79, 0.01), 0.17, 0.115, colors.trousers);
-      addTube(vector(0.17, 0.59, 0), vector(0.19, -0.79, 0.01), 0.17, 0.115, colors.trousers);
-      addTube(vector(-0.19, -0.78, 0.02), vector(-0.25, -0.93, 0.13), 0.12, 0.1, colors.shoes, 8);
-      addTube(vector(0.19, -0.78, 0.02), vector(0.25, -0.93, 0.13), 0.12, 0.1, colors.shoes, 8);
-
-      addPanel([
-        vector(-0.13, 1.36, 0.232), vector(0.13, 1.36, 0.232),
-        vector(0.09, 0.63, 0.185), vector(-0.09, 0.63, 0.185),
-      ], colors.shirt);
-      addPanel([vector(-0.13, 1.38, 0.239), vector(-0.02, 1.17, 0.24), vector(-0.16, 1.25, 0.222)], colors.shirt);
-      addPanel([vector(0.13, 1.38, 0.239), vector(0.02, 1.17, 0.24), vector(0.16, 1.25, 0.222)], colors.shirt);
-      addPanel([vector(0.19, 1.16, 0.235), vector(0.30, 1.16, 0.219), vector(0.30, 1.09, 0.219), vector(0.19, 1.09, 0.235)], colors.accent);
-
-      faces.sort((a, b) => a.depth - b.depth);
-      for (const face of faces) {
-        context.beginPath();
-        context.moveTo(face.projected[0].x, face.projected[0].y);
-        for (let i = 1; i < face.projected.length; i += 1) {
-          context.lineTo(face.projected[i].x, face.projected[i].y);
-        }
-        context.closePath();
-        context.fillStyle = face.color;
-        context.fill();
-      }
+      ctx.lineTo(hc.x + span, hc.y - hh * 2);
+      ctx.lineTo(hc.x - span, hc.y - hh * 2);
+      ctx.closePath();
+      const capGradient = ctx.createLinearGradient(hc.x - hw, hc.y - hh, hc.x + hw, hc.y);
+      capGradient.addColorStop(0, shade(colors.hair, 1.35));
+      capGradient.addColorStop(0.5, shade(colors.hair, 1));
+      capGradient.addColorStop(1, shade(colors.hair, 0.78));
+      ctx.fillStyle = capGradient;
+      ctx.fill();
+      ctx.restore();
+      // Hair sheen
+      ctx.globalAlpha = 0.22;
+      ctx.beginPath();
+      ctx.ellipse(hc.x - hw * 0.35, hc.y - hh * 0.82, hw * 0.32, hh * 0.1, -0.35, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff";
+      ctx.fill();
+      ctx.globalAlpha = 1;
     }
 
     function describeAngle(angle) {

@@ -1,6 +1,6 @@
 # First-pass design
 
-The user approved the revised cartoon-style 3D avatar mockup on October 25, 2026, before production UI implementation. The approved concept includes a deeper beige palette, rounded surfaces, iOS start and result screens, matching responsive web screens, light and dark themes, a rotatable avatar with angle controls, and a separate fitting-token fidget.
+The user approved the revised cartoon-style 3D avatar mockup on October 25, 2026, before production UI implementation. On October 26, 2026, the user approved replacing the faceted mannequin with an original Bitmoji-like character: an oversized rounded head, large expressive eyes that track the spin direction, a smile, swept hair, smooth gradient shading, and a blazer with an accent tie. It is inspired by the Snapchat Bitmoji style but uses no Bitmoji assets and is not an official Bitmoji. The approved concept includes a deeper beige palette, rounded surfaces, iOS start and result screens, matching responsive web screens, light and dark themes, a rotatable avatar with angle controls, and a separate fitting-token fidget.
 
 Open [`first-pass-mockup.html`](../mockups/first-pass-mockup.html) in a browser to inspect both iPhone concepts, switch web screens and preview widths, change themes, and rotate the avatar.
 

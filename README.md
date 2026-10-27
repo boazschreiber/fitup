@@ -20,7 +20,7 @@ The app name `SuitUp` is inferred from the repository name and is not yet confir
 
 ## First-pass design
 
-Open [`mockups/first-pass-mockup.html`](mockups/first-pass-mockup.html) for the iOS home and fit-note screens and the responsive web adaptation. The mockup uses an annotated fitting-sheet concept, includes light/dark previews, a rotatable, cartoon-style 3D avatar, and a separate fidget token. The sample avatar and rating are synthetic; the avatar is an original generic concept, not a copy of an existing character brand. This is a design artifact for review, not production app code.
+Open [`mockups/first-pass-mockup.html`](mockups/first-pass-mockup.html) for the iOS home and fit-note screens and the responsive web adaptation. The mockup uses an annotated fitting-sheet concept, includes light/dark previews, a rotatable, Bitmoji-style 3D avatar (approved October 26, 2026), and a separate fidget token. The sample avatar and rating are synthetic; the avatar is an original generic concept, not a copy of an existing character brand. This is a design artifact for review, not production app code.
 
 PNG captures of the iOS screens and desktop/mobile web screens in both themes are in [`mockups/`](mockups/). See the [design record and screenshot gallery](docs/design.md).
 
